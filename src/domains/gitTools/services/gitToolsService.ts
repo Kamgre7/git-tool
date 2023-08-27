@@ -10,39 +10,17 @@ export type BlobTreeData = {
 
 export type SingleElementArray = [string];
 
+export type BlobShaWithFilename = {
+  sha: string;
+  filename: string;
+};
+
 export interface IGitToolsService {
   createCommit(
     repoInfo: RepoInformation,
     file: FileInformation
   ): Promise<string>;
   sendMultipleFiles(): Promise<void>;
-  createBlob(owner: string, repo: string, buffer: Buffer): Promise<string>;
-  baseTree(owner: string, repo: string, branch: string): Promise<string>;
-  createTree(
-    owner: string,
-    repo: string,
-    baseTree: string,
-    blobsSha: string[],
-    path: string
-  ): Promise<string>;
-  getRefs(
-    owner: string,
-    repo: string,
-    branch: string
-  ): Promise<SingleElementArray>;
-  commit(
-    owner: string,
-    repo: string,
-    commitMsg: string,
-    tree: string,
-    parents: SingleElementArray
-  ): Promise<string>;
-  updateRefs(
-    owner: string,
-    repo: string,
-    branch: string,
-    commitSha: string
-  ): Promise<string>;
 }
 
 export class GitToolsService implements IGitToolsService {
@@ -54,17 +32,24 @@ export class GitToolsService implements IGitToolsService {
   ): Promise<string> {
     const { branch, commitMsg, githubToken, owner, repo, path } = repoInfo;
 
-    const blobSha = await this.createBlob(owner, repo, file.buffer);
-    const baseTreeSha = await this.baseTree(owner, repo, branch);
-    const treeSha = await this.createTree(
+    const blobSha = await this.githubApi.createBlob(owner, repo, file.buffer);
+
+    const baseTreeSha = await this.githubApi.getBaseTree(owner, repo, branch);
+
+    const blobs = this.createBlobTreeObject(
+      [{ sha: blobSha, filename: file.originalname }],
+      path
+    );
+
+    const treeSha = await this.githubApi.createTree(
       owner,
       repo,
       baseTreeSha,
-      [blobSha],
-      path
+      blobs
     );
-    const refsSha = await this.getRefs(owner, repo, branch);
-    const commitSha = await this.commit(
+
+    const refsSha = await this.githubApi.getRefs(owner, repo, branch);
+    const commitSha = await this.githubApi.createCommit(
       owner,
       repo,
       commitMsg,
@@ -72,74 +57,17 @@ export class GitToolsService implements IGitToolsService {
       refsSha
     );
 
-    return await this.updateRefs(owner, repo, branch, commitSha);
+    return await this.githubApi.updateRefs(owner, repo, branch, commitSha);
   }
 
   async sendMultipleFiles(): Promise<void> {}
 
-  async createBlob(
-    owner: string,
-    repo: string,
-    buffer: Buffer
-  ): Promise<string> {
-    return await this.githubApi.createBlob(owner, repo, buffer);
-  }
-
-  async baseTree(owner: string, repo: string, branch: string): Promise<string> {
-    return await this.githubApi.getBaseTree(owner, repo, branch);
-  }
-
-  async createTree(
-    owner: string,
-    repo: string,
-    baseTree: string,
-    blobsSha: string[],
-    path: string
-  ): Promise<string> {
-    const blobs = this.createBlobTreeObject(blobsSha, path);
-
-    return await this.githubApi.createTree(owner, repo, baseTree, blobs);
-  }
-
-  async getRefs(
-    owner: string,
-    repo: string,
-    branch: string
-  ): Promise<SingleElementArray> {
-    return await this.githubApi.getRefs(owner, repo, branch);
-  }
-
-  async commit(
-    owner: string,
-    repo: string,
-    commitMsg: string,
-    tree: string,
-    parents: SingleElementArray
-  ): Promise<string> {
-    return await this.githubApi.createCommit(
-      owner,
-      repo,
-      commitMsg,
-      tree,
-      parents
-    );
-  }
-
-  async updateRefs(
-    owner: string,
-    repo: string,
-    branch: string,
-    commitSha: string
-  ): Promise<string> {
-    return await this.githubApi.updateRefs(owner, repo, branch, commitSha);
-  }
-
   private createBlobTreeObject(
-    shaArray: string[],
+    dataArray: BlobShaWithFilename[],
     path: string
   ): BlobTreeData[] {
-    return shaArray.map((sha) => ({
-      path,
+    return dataArray.map(({ sha, filename }) => ({
+      path: path === '' ? filename : `${path}/${filename}`,
       sha,
       type: 'blob',
       mode: '100644',

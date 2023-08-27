@@ -8,7 +8,7 @@ export const PostCommitBodySchema = z.object({
   repo: z.string().nonempty(),
   owner: z.string().nonempty(),
   branch: z.string().nonempty(),
-  path: z.string().nonempty(),
+  path: z.string(),
 });
 
 export const FileSchema = z.object({
