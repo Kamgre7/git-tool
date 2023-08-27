@@ -18,6 +18,11 @@ export class GitToolsController implements IGitToolsController {
       repositoryInformation,
       file
     );
+
+    res.status(201).json({
+      sha: result,
+      message: 'Commit created successfully.',
+    });
   };
 
   postMultipleCommits = async (): Promise<void> => {
