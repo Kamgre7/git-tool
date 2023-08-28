@@ -8,7 +8,7 @@ const app = express();
 
 app.use(express.json());
 
-app.use('/gittool', gitToolRouter);
+app.use('/git-tool', gitToolRouter);
 
 app.use(errorHandler);
 
