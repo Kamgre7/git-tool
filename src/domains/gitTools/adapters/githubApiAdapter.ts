@@ -2,6 +2,7 @@ import { AppError } from '../../../errors/AppError';
 import { BadRequestError } from '../../../errors/BadRequestError';
 import { Octokit, RequestError } from 'octokit';
 import { BlobTreeData, SingleElementArray } from '../services/gitToolsService';
+import { githubHttpClient } from '../../../httpClient/githubHttpClient';
 
 export interface IGithubApiAdapter {
   createBlob(owner: string, repo: string, buffer: Buffer): Promise<string>;
@@ -33,15 +34,7 @@ export interface IGithubApiAdapter {
 }
 
 export class GithubApiAdapter implements IGithubApiAdapter {
-  private readonly githubHttpClient: Octokit;
-  constructor(
-    /* private readonly githubHttpClient: Octokit */
-    githubToken: string
-  ) {
-    this.githubHttpClient = new Octokit({
-      auth: githubToken,
-    });
-  }
+  constructor(private readonly githubHttpClient: Octokit) {}
 
   async createBlob(
     owner: string,
@@ -199,6 +192,4 @@ export class GithubApiAdapter implements IGithubApiAdapter {
   }
 }
 
-export const githubApi = new GithubApiAdapter(
-  process.env.GITHUB_TOKEN! /* githubHttpClient */
-);
+export const githubApi = new GithubApiAdapter(githubHttpClient);
