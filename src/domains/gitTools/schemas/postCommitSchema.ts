@@ -3,7 +3,6 @@ import { z } from 'zod';
 const isBuffer = (value: unknown): value is Buffer => value instanceof Buffer;
 
 export const PostCommitBodySchema = z.object({
-  githubToken: z.string().nonempty(),
   commitMsg: z.string().nonempty(),
   repo: z.string().nonempty(),
   owner: z.string().nonempty(),

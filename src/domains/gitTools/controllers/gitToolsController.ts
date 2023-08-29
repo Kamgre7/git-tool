@@ -14,13 +14,13 @@ export class GitToolsController implements IGitToolsController {
     const repositoryInformation = PostCommitBodySchema.parse(req.body);
     const file = FileSchema.parse(req.file);
 
-    const result = await this.gitToolsService.createCommit(
+    const commitSha = await this.gitToolsService.createCommit(
       repositoryInformation,
       file
     );
 
     res.status(201).json({
-      sha: result,
+      sha: commitSha,
       message: 'Commit created successfully.',
     });
   };
@@ -29,13 +29,13 @@ export class GitToolsController implements IGitToolsController {
     const repositoryInformation = PostCommitBodySchema.parse(req.body);
     const file = FileSchema.parse(req.file);
 
-    const result = await this.gitToolsService.createCommitFromZip(
+    const commitSha = await this.gitToolsService.createCommitFromZip(
       repositoryInformation,
       file
     );
 
     res.status(201).json({
-      sha: result,
+      sha: commitSha,
       message: 'Commit created successfully.',
     });
   };

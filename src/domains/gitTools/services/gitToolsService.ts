@@ -41,7 +41,7 @@ export class GitToolsService implements IGitToolsService {
     repoInfo: RepoInformation,
     file: FileInformation
   ): Promise<string> {
-    const { branch, commitMsg, githubToken, owner, repo, path } = repoInfo;
+    const { branch, commitMsg, owner, repo, path } = repoInfo;
 
     const blobSha = await this.githubApi.createBlob(owner, repo, file.buffer);
 
@@ -75,7 +75,7 @@ export class GitToolsService implements IGitToolsService {
     repoInfo: RepoInformation,
     zipFile: FileInformation
   ): Promise<string> {
-    const { branch, commitMsg, githubToken, owner, repo, path } = repoInfo;
+    const { branch, commitMsg, owner, repo, path } = repoInfo;
     const filesInfo = this.zipHandler.getFilesInformation(zipFile.buffer);
 
     const blobsSha = await this.getMultipleBlobsSha(owner, repo, filesInfo);
