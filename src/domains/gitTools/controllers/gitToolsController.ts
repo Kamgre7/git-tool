@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { IGitToolsService, gitToolsService } from '../services/gitToolsService';
-import { FileSchema, PostCommitBodySchema } from '../schemas/postCommitSchema';
+import { FileSchema, PostCommitFileRequest } from '../schemas/postCommitSchema';
+import { ParsedRequest } from '../../../apiTypes';
 
 export interface IGitToolsController {
   postCommit(req: Request, res: Response): Promise<void>;
@@ -10,8 +11,11 @@ export interface IGitToolsController {
 export class GitToolsController implements IGitToolsController {
   constructor(private readonly gitToolsService: IGitToolsService) {}
 
-  postCommit = async (req: Request, res: Response): Promise<void> => {
-    const repositoryInformation = PostCommitBodySchema.parse(req.body);
+  postCommit = async (
+    req: ParsedRequest<PostCommitFileRequest>,
+    res: Response
+  ): Promise<void> => {
+    const repositoryInformation = req.body;
     const file = FileSchema.parse(req.file);
 
     const commitSha = await this.gitToolsService.createCommit(
@@ -25,8 +29,11 @@ export class GitToolsController implements IGitToolsController {
     });
   };
 
-  postCommitFromZip = async (req: Request, res: Response): Promise<void> => {
-    const repositoryInformation = PostCommitBodySchema.parse(req.body);
+  postCommitFromZip = async (
+    req: ParsedRequest<PostCommitFileRequest>,
+    res: Response
+  ): Promise<void> => {
+    const repositoryInformation = req.body;
     const file = FileSchema.parse(req.file);
 
     const commitSha = await this.gitToolsService.createCommitFromZip(

@@ -26,3 +26,4 @@ export const PostCommitSchema = z.object({
 
 export type RepoInformation = z.infer<typeof PostCommitBodySchema>;
 export type FileInformation = z.infer<typeof FileSchema>;
+export type PostCommitFileRequest = z.infer<typeof PostCommitSchema>
