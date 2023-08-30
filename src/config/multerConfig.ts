@@ -2,10 +2,9 @@ import { Request } from 'express';
 import multer, { FileFilterCallback } from 'multer';
 import { BadRequestError } from '../errors/BadRequestError';
 
-const storage = multer.memoryStorage();
-export const upload = multer({ storage });
+export const storage = multer.memoryStorage();
 
-const zipFileFilter = (
+export const zipFileFilter = (
   req: Request,
   file: Express.Multer.File,
   cb: FileFilterCallback
@@ -16,5 +15,3 @@ const zipFileFilter = (
     cb(new BadRequestError('Only ZIP files are allowed.'));
   }
 };
-
-export const zipUpload = multer({ storage, fileFilter: zipFileFilter });

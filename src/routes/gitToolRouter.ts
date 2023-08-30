@@ -1,15 +1,16 @@
 import { Router } from 'express';
 import { gitToolsController } from '../domains/gitTools/controllers/gitToolsController';
-import { upload, zipUpload } from '../config/multerConfig';
+import { storage, zipFileFilter } from '../config/multerConfig';
 import { requestValidator } from '../middlewares/requestValidator';
 import { PostCommitSchema } from '../domains/gitTools/schemas/postCommitSchema';
+import multer from 'multer';
 
 export const gitToolRouter = Router();
 
 gitToolRouter
   .route('/commit')
   .post(
-    upload.single('file'),
+    multer({ storage }).single('file'),
     requestValidator(PostCommitSchema),
     gitToolsController.postCommit
   );
@@ -17,7 +18,7 @@ gitToolRouter
 gitToolRouter
   .route('/commit/zip')
   .post(
-    zipUpload.single('file'),
+    multer({ storage, fileFilter: zipFileFilter }).single('file'),
     requestValidator(PostCommitSchema),
     gitToolsController.postCommitFromZip
   );
