@@ -88,7 +88,7 @@ describe('Git-tools service', () => {
     expect(githubApiAdapterMock.updateRefs).toBeCalledTimes(1);
   });
 
-  it('Should call creabeBlob method twice - two files in zip, other methods called 1 time', async () => {
+  it('Should call createBlob method twice - two files in zip, other methods should be called 1 time', async () => {
     fileInfo.buffer = zipFileBuffer;
     await gitToolsService.createCommitFromZip(repoInfo, fileInfo);
 
