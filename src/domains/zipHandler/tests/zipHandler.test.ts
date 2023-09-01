@@ -1,5 +1,5 @@
 import AdmZip from 'adm-zip';
-import { IZipHandler, ZipHandler } from '../../zipHandler/zipHandler';
+import { IZipHandler, ZipHandler } from '../zipHandler';
 
 describe('Zip handler', () => {
   let firstFilename: string;
